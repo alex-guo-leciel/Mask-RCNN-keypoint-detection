@@ -26,7 +26,7 @@ MODEL_DIR = os.path.join(ROOT_DIR, "logs.nosync")
 
 COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5.nosync")
 
-class ShapesConfig(Config):
+class LayoutsConfig(Config):
     """Configuration for training on the toy shapes dataset.
     Derives from the base Config class and overrides values specific
     to the toy shapes dataset.
@@ -60,7 +60,7 @@ class ShapesConfig(Config):
     # use small validation steps since the epoch is small
     VALIDATION_STEPS = 5
 
-config = ShapesConfig()
+config = LayoutsConfig()
 config.display()
 
 
@@ -185,10 +185,10 @@ elif init_with == "last":
 # which layers to train by name pattern.
 model.train(dataset_train, dataset_val,
             learning_rate=config.LEARNING_RATE,
-            epochs=5,
+            epochs=15,
             layers='heads')
 
 model.train(dataset_train, dataset_val,
             learning_rate=config.LEARNING_RATE / 10,
-            epochs=10,
+            epochs=30,
             layers="all")
