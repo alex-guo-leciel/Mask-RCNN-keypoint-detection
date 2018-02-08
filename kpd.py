@@ -34,18 +34,18 @@ class ShapesConfig(Config):
     # Give the configuration a recognizable name
     NAME = "layout"
 
-    # Train on 1 GPU and 8 images per GPU. We can put multiple images on each
-    # GPU because the images are small. Batch size is 8 (GPUs * images/GPU).
-    GPU_COUNT = 1
-    IMAGES_PER_GPU = 8
+    # Train on 2 GPU and 4 images per GPU. We can put multiple images on each
+    # GPU because the images are small. Batch size is 4 (GPUs * images/GPU).
+    GPU_COUNT = 2
+    IMAGES_PER_GPU = 4
 
     # Number of classes (including background)
     NUM_CLASSES = 1 + 11  # background + layouts
 
     # Use small images for faster training. Set the limits of the small side
     # the large side, and that determines the image shape.
-    IMAGE_MIN_DIM = 256
-    IMAGE_MAX_DIM = 256
+    IMAGE_MIN_DIM = 128
+    IMAGE_MAX_DIM = 128
 
     # Use smaller anchors because our image and objects are small
     RPN_ANCHOR_SCALES = (8, 16, 32, 64, 128)  # anchor side in pixels
@@ -158,7 +158,7 @@ model = modellib.MaskRCNN(mode="training", config=config,
                           model_dir=MODEL_DIR)
 
 # Which weights to start with?
-init_with = "coco"  # imagenet, coco, or last
+init_with = "last"  # imagenet, coco, or last
 
 if init_with == "imagenet":
     model.load_weights(model.get_imagenet_weights(), by_name=True)
@@ -187,3 +187,8 @@ model.train(dataset_train, dataset_val,
             learning_rate=config.LEARNING_RATE,
             epochs=1,
             layers='heads')
+
+model.train(dataset_train, dataset_val,
+            learning_rate=config.LEARNING_RATE / 10,
+            epochs=2,
+            layers="all")
