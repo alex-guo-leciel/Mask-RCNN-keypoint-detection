@@ -173,11 +173,11 @@ elif init_with == "last":
     # Load the last model you trained and continue training
     model.load_weights(model.find_last()[1], by_name=True)
 
-image_ids = np.random.choice(dataset_train.image_ids, 4)
-for image_id in image_ids:
-    image = dataset_train.load_image(image_id)
-    mask, class_ids = dataset_train.load_mask(image_id)
-    visualize.display_top_masks(image, mask, class_ids, dataset_train.class_names)
+#image_ids = np.random.choice(dataset_train.image_ids, 4)
+#for image_id in image_ids:
+#   image = dataset_train.load_image(image_id)
+#   mask, class_ids = dataset_train.load_mask(image_id)
+#   visualize.display_top_masks(image, mask, class_ids, dataset_train.class_names)
 
 # Train the head branches
 # Passing layers="heads" freezes all layers except the head
