@@ -36,8 +36,8 @@ class ShapesConfig(Config):
 
     # Train on 2 GPU and 4 images per GPU. We can put multiple images on each
     # GPU because the images are small. Batch size is 4 (GPUs * images/GPU).
-    GPU_COUNT = 2
-    IMAGES_PER_GPU = 4
+    GPU_COUNT = len(os.environ['CUDA_VISIBLE_DEVICES'].split(','))
+    IMAGES_PER_GPU = 8
 
     # Number of classes (including background)
     NUM_CLASSES = 1 + 11  # background + layouts
@@ -48,7 +48,7 @@ class ShapesConfig(Config):
     IMAGE_MAX_DIM = 128
 
     # Use smaller anchors because our image and objects are small
-    RPN_ANCHOR_SCALES = (8, 16, 32, 64, 128)  # anchor side in pixels
+    RPN_ANCHOR_SCALES = (8, 16, 32, 64, 128)    # anchor side in pixels
 
     # Reduce training ROIs per image because the images are small and have
     # few objects. Aim to allow ROI sampling to pick 33% positive ROIs.
@@ -158,7 +158,7 @@ model = modellib.MaskRCNN(mode="training", config=config,
                           model_dir=MODEL_DIR)
 
 # Which weights to start with?
-init_with = "last"  # imagenet, coco, or last
+init_with = "coco"  # imagenet, coco, or last
 
 if init_with == "imagenet":
     model.load_weights(model.get_imagenet_weights(), by_name=True)
@@ -185,10 +185,10 @@ elif init_with == "last":
 # which layers to train by name pattern.
 model.train(dataset_train, dataset_val,
             learning_rate=config.LEARNING_RATE,
-            epochs=1,
+            epochs=10,
             layers='heads')
 
 model.train(dataset_train, dataset_val,
             learning_rate=config.LEARNING_RATE / 10,
-            epochs=2,
+            epochs=20,
             layers="all")
