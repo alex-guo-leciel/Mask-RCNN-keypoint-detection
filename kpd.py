@@ -22,7 +22,7 @@ from model import log
 ROOT_DIR = os.getcwd()
 
 # Directory to save logs and trained model
-MODEL_DIR = os.path.join(ROOT_DIR, "logs")
+MODEL_DIR = os.path.join(ROOT_DIR, "logs.nosync")
 
 COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5.nosync")
 
@@ -85,6 +85,9 @@ class LayoutDataset(utils.Dataset):
             validation_img_name_list.append(i[:-4])
         else: test_img_name_list.append(i[:-4])
 
+    #set mask point size
+    mask_point_size = 20
+
     def load_layouts(self,type):
         #11 kinds of layouts
         self.add_class("layouts", 1, "type0")
@@ -138,7 +141,10 @@ class LayoutDataset(utils.Dataset):
         class_ids = np.array([info['type'] + 1], dtype=np.int32)
         mask = np.resize(np.array([([0]*info['resolution'][1]) for i in range(info['resolution'][0])], dtype=np.uint8),(info['resolution'][0],info['resolution'][1],1))
         for point in info['point']:
-            mask[int(point[1]-0.5)][int(point[0]-0.5)][0] = 1
+            mask[max(0,int(point[1]-0.5)-int(self.mask_point_size/2)):
+                 min(info['resolution'][0],int(point[1]-0.5)+int(self.mask_point_size/2)),
+            max(0,int(point[0]-0.5)-int(self.mask_point_size/2)):
+                 min(info['resolution'][1],int(point[0]-0.5)+int(self.mask_point_size/2)),0] = 1
         return mask, class_ids
 
 
@@ -167,11 +173,11 @@ elif init_with == "last":
     # Load the last model you trained and continue training
     model.load_weights(model.find_last()[1], by_name=True)
 
-#image_ids = np.random.choice(dataset_train.image_ids, 4)
-#for image_id in image_ids:
-#   image = dataset_train.load_image(image_id)
-#   mask, class_ids = dataset_train.load_mask(image_id)
-#   visualize.display_top_masks(image, mask, class_ids, dataset_train.class_names)
+image_ids = np.random.choice(dataset_train.image_ids, 4)
+for image_id in image_ids:
+    image = dataset_train.load_image(image_id)
+    mask, class_ids = dataset_train.load_mask(image_id)
+    visualize.display_top_masks(image, mask, class_ids, dataset_train.class_names)
 
 # Train the head branches
 # Passing layers="heads" freezes all layers except the head
