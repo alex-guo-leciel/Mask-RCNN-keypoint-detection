@@ -22,9 +22,9 @@ from model import log
 ROOT_DIR = os.getcwd()
 
 # Directory to save logs and trained model
-MODEL_DIR = os.path.join("/data4T/sguo/logs")
+MODEL_DIR = os.path.join(ROOT_DIR, "logs")
 
-COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5.nosync")
+COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 
 class LayoutsConfig(Config):
     """Configuration for training on the toy shapes dataset.
